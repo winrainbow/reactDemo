@@ -1,4 +1,5 @@
 import React from 'react'
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
 import {CSSTransition} from 'react-transition-group'
 import {
@@ -12,8 +13,7 @@ import {actionCreators} from './store';
 const getListArea = (props) => {
     console.log("getListArea:" + JSON.stringify(props))
 
-    const focused = props.focused;
-    const list = props.list;
+    const {focused, list} = props;
     if (focused) {
         return (
             <SearchInfo>
@@ -56,8 +56,8 @@ const Header = (props) => {
                     >
                         <NavSearch
                             className={props.focused ? 'focused' : ''}
-                            onFocus={props.handleInputFocus}
-                            onBlur={props.handleInputBlur}
+                            onFocus={props.actions.searchFocus}
+                            onBlur={props.actions.searchBlur}
                         />
                     </CSSTransition>
                     <i className={props.focused ? 'focused iconfont' : 'iconfont'}>&#xe6cf;</i>
@@ -86,13 +86,7 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
     return {
-        handleInputFocus: () => {
-            dispatch(actionCreators.getList());
-            dispatch(actionCreators.searchFocus());
-        },
-        handleInputBlur: () => {
-            dispatch(actionCreators.searchBlur());
-        }
+        actions: bindActionCreators({...actionCreators}, dispatch)
     }
 };
 
