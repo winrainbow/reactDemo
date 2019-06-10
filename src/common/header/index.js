@@ -1,9 +1,41 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {CSSTransition} from 'react-transition-group'
-import {HeaderWrapper, Logo, Nav, NavItem, NavSearch, Addition, Button, SearchWrapper} from "./style";
+import {
+    HeaderWrapper, Logo, Nav, NavItem, NavSearch, Addition,
+    Button, SearchWrapper, SearchInfo, SearchInfoTitle, SearchInfoSwitch, SearchInfoItem,
+    SearchInfoList,
+
+} from "./style";
 import {actionCreators} from './store';
 
+const getListArea = (props) => {
+    console.log("getListArea:" + JSON.stringify(props))
+
+    const focused = props.focused;
+    const list = props.list;
+    if (focused) {
+        return (
+            <SearchInfo>
+                <SearchInfoTitle>
+                    热门搜索
+                    <SearchInfoSwitch>换一批</SearchInfoSwitch>
+                </SearchInfoTitle>
+                <SearchInfoList>
+                    {
+                        list.map((item) => {
+                            return (
+                                <SearchInfoItem key={item}>{item}</SearchInfoItem>
+                            )
+                        })
+                    }
+                </SearchInfoList>
+            </SearchInfo>
+        )
+    } else {
+        return null;
+    }
+}
 const Header = (props) => {
     return (
         <HeaderWrapper>
@@ -29,13 +61,15 @@ const Header = (props) => {
                         />
                     </CSSTransition>
                     <i className={props.focused ? 'focused iconfont' : 'iconfont'}>&#xe6cf;</i>
+                    {getListArea(props)}
                 </SearchWrapper>
 
             </Nav>
             <Addition>
                 <Button className='writing'>
                     <i className='iconfont'>&#xe6cf;</i>
-                    写文章</Button>
+                    写文章
+                </Button>
                 <Button className='reg'>注册</Button>
             </Addition>
         </HeaderWrapper>
@@ -43,13 +77,17 @@ const Header = (props) => {
 }
 
 const mapStateToProps = (state) => {
-    return {
-        focused: state.get('header').get('focused')
+    const stateNew = {
+        focused: state.get('header').get('focused'),
+        list: state.getIn(['header', 'list'])
     }
+    console.log("mapStateToProps:" + JSON.stringify(stateNew))
+    return stateNew;
 };
 const mapDispatchToProps = (dispatch) => {
     return {
         handleInputFocus: () => {
+            dispatch(actionCreators.getList());
             dispatch(actionCreators.searchFocus());
         },
         handleInputBlur: () => {

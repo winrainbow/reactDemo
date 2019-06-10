@@ -1,6 +1,7 @@
 import * as constant from './constant'
 import {fromJS} from 'immutable'
-const defaultState = fromJS({focused: false})
+
+const defaultState = fromJS({focused: false,list:[]})
 /**
  * reducer 不能对 原state 处理，只能返回一个新的state
  * immutable.js 用来帮助不修改 原state
@@ -12,10 +13,14 @@ const defaultState = fromJS({focused: false})
  */
 export default (state = defaultState, action) => {
     if (action.type === constant.SEARCH_FOCUS) {
-        return state.set('focused',true)
+        return state.set('focused', true)
     }
     if (action.type === constant.SEARCH_BLUR) {
-        return state.set('focused',false)
+        return state.set('focused', false)
+    }
+    if (action.type === constant.CHANGE_LIST) {
+        console.log("reducer:" + JSON.stringify(action));
+        return state.set('list', action.data)
     }
     return state
 }
