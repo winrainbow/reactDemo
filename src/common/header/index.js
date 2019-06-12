@@ -13,22 +13,28 @@ import {actionCreators} from './store';
 const getListArea = (props) => {
     console.log("getListArea:" + JSON.stringify(props))
 
-    const {focused, list} = props;
-    if (focused) {
+    const {focused, list, page,mouseIn,totalPage} = props;
+    const jsList = list.toJS();
+    const pageList = [];
+    if(jsList.length){
+        for(let i = (page-1)*10;i<page*10;i++){
+            pageList.push(<SearchInfoItem key={jsList[i]}>{jsList[i]}</SearchInfoItem>);
+        }
+    }
+    if (focused||mouseIn) {
         return (
-            <SearchInfo>
+            <SearchInfo
+                onMouseEnter={()=>{props.actions.mouseEnter(true)}}
+                onMouseLeave = {()=>{props.actions.mouseEnter(false)}}
+            >
                 <SearchInfoTitle>
                     热门搜索
-                    <SearchInfoSwitch>换一批</SearchInfoSwitch>
+                    <SearchInfoSwitch
+                        onClick={()=>{props.actions.changePageList(page,totalPage)}}
+                    >换一批</SearchInfoSwitch>
                 </SearchInfoTitle>
                 <SearchInfoList>
-                    {
-                        list.map((item) => {
-                            return (
-                                <SearchInfoItem key={item}>{item}</SearchInfoItem>
-                            )
-                        })
-                    }
+                    {pageList}
                 </SearchInfoList>
             </SearchInfo>
         )
@@ -79,7 +85,10 @@ const Header = (props) => {
 const mapStateToProps = (state) => {
     const stateNew = {
         focused: state.get('header').get('focused'),
-        list: state.getIn(['header', 'list'])
+        list: state.getIn(['header', 'list']),
+        page: state.getIn(['header', 'page']),
+        mouseIn:state.getIn(['header','mouseIn']),
+        totalPage:state.getIn(['header','totalPage'])
     }
     console.log("mapStateToProps:" + JSON.stringify(stateNew))
     return stateNew;
